@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bhavya — Invitation & Event Design</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,500;0,9..144,600;1,9..144,500&family=Work+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#FBFAF7;
+    --paper-alt:#F1ECE1;
+    --ink:#211D17;
+    --ink-soft:#6E6858;
+    --line:#E3DDCE;
+    --marigold:#B87A2E;
+    --marigold-soft:#EADFC9;
+    --green:#33503F;
+    --shadow: 0 1px 2px rgba(33,29,23,0.04), 0 8px 24px rgba(33,29,23,0.06);
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'Work Sans', sans-serif;
+    font-weight:400;
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3,.display{
+    font-family:'Fraunces', serif;
+    font-weight:500;
+    letter-spacing:-0.01em;
+  }
+  .wrap{max-width:1040px;margin:0 auto;padding:0 28px;}
+
+  /* ---------- HERO ---------- */
+  .hero{
+    padding:72px 0 48px;
+    border-bottom:1px solid var(--line);
+    opacity:0;
+    animation:fadeUp .7s ease forwards;
+  }
+  @keyframes fadeUp{
+    from{opacity:0; transform:translateY(10px);}
+    to{opacity:1; transform:translateY(0);}
+  }
+  .hero-top{display:flex; justify-content:space-between; align-items:flex-start; gap:24px; flex-wrap:wrap;}
+  .eyebrow{
+    font-size:12.5px;
+    letter-spacing:0.14em;
+    text-transform:uppercase;
+    color:var(--marigold);
+    margin:0 0 14px;
+    font-weight:600;
+  }
+  .hero h1{
+    font-size:clamp(38px, 6vw, 62px);
+    line-height:1.02;
+    margin:0 0 18px;
+  }
+  .hero h1 em{
+    font-style:italic;
+    color:var(--marigold);
+  }
+  .hero p.tagline{
+    max-width:520px;
+    font-size:17px;
+    line-height:1.6;
+    color:var(--ink-soft);
+    margin:0;
+  }
+  .edit-btn{
+    border:1px solid var(--line);
+    background:var(--paper);
+    color:var(--ink-soft);
+    font-family:'Work Sans';
+    font-size:13px;
+    padding:9px 16px;
+    border-radius:100px;
+    cursor:pointer;
+    white-space:nowrap;
+    transition:all .15s ease;
+  }
+  .edit-btn:hover{border-color:var(--ink-soft); color:var(--ink);}
+
+  .contact-row{
+    display:flex; gap:22px; flex-wrap:wrap;
+    margin-top:28px;
+  }
+  .contact-row a{
+    color:var(--ink);
+    text-decoration:none;
+    font-size:14px;
+    border-bottom:1px solid var(--line);
+    padding-bottom:3px;
+    transition:border-color .15s ease, color .15s ease;
+  }
+  .contact-row a:hover{border-color:var(--marigold); color:var(--marigold);}
+
+  /* ---------- TABS ---------- */
+  .tabs{
+    display:flex; gap:6px;
+    padding:22px 0;
+    position:sticky; top:0;
+    background:var(--paper);
+    z-index:5;
+    border-bottom:1px solid var(--line);
+    flex-wrap:wrap;
+  }
+  .tab{
+    font-family:'Work Sans';
+    font-size:13.5px;
+    letter-spacing:0.02em;
+    background:none;
+    border:none;
+    color:var(--ink-soft);
+    padding:8px 16px;
+    border-radius:100px;
+    cursor:pointer;
+    transition:all .15s ease;
+  }
+  .tab.active{
+    background:var(--ink);
+    color:var(--paper);
+  }
+  .tab:not(.active):hover{background:var(--paper-alt); color:var(--ink);}
+  .spacer{flex:1;}
+  .add-btn{
+    font-family:'Work Sans';
+    font-size:13.5px;
+    background:var(--marigold);
+    color:#fff;
+    border:none;
+    padding:9px 18px;
+    border-radius:100px;
+    cursor:pointer;
+    font-weight:500;
+    transition:transform .12s ease, opacity .12s ease;
+  }
+  .add-btn:hover{opacity:0.88;}
+  .add-btn:active{transform:scale(0.97);}
+
+  /* ---------- GRID ---------- */
+  .grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fill, minmax(260px, 1fr));
+    gap:26px;
+    padding:36px 0 90px;
+  }
+  .card{
+    position:relative;
+    background:var(--paper-alt);
+    border-radius:2px;
+    overflow:hidden;
+    box-shadow:var(--shadow);
+    transition:transform .2s ease, box-shadow .2s ease;
+  }
+  .card:hover{transform:translateY(-3px); box-shadow:0 4px 8px rgba(33,29,23,0.06), 0 16px 32px rgba(33,29,23,0.10);}
+  /* folded-corner signature detail */
+  .card::after{
+    content:"";
+    position:absolute; top:0; right:0;
+    width:26px; height:26px;
+    background:linear-gradient(135deg, transparent 50%, var(--paper) 50.5%);
+    z-index:2;
+  }
+  .card::before{
+    content:"";
+    position:absolute; top:0; right:0;
+    width:26px; height:26px;
+    background:var(--marigold-soft);
+    clip-path:polygon(100% 0, 0 0, 100% 100%);
+    z-index:1;
+  }
+  .card-media{
+    width:100%; aspect-ratio:4/5;
+    background:var(--paper);
+    display:flex; align-items:center; justify-content:center;
+    overflow:hidden;
+    border-bottom:1px solid var(--line);
+  }
+  .card-media img{width:100%; height:100%; object-fit:cover; display:block;}
+  .card-media .ph{
+    color:var(--ink-soft); font-size:12px; text-align:center; padding:20px;
+    font-family:'Fraunces'; font-style:italic;
+  }
+  .card-body{padding:16px 18px 18px;}
+  .card-cat{
+    font-size:10.5px; letter-spacing:0.1em; text-transform:uppercase;
+    color:var(--green); font-weight:600; margin:0 0 6px;
+  }
+  .card-title{
+    font-family:'Fraunces'; font-size:18px; font-weight:500;
+    margin:0 0 8px; line-height:1.3;
+  }
+  .card-note{font-size:13px; color:var(--ink-soft); line-height:1.5; margin:0 0 10px;}
+  .card-actions{display:flex; justify-content:space-between; align-items:center; margin-top:6px;}
+  .card-link{font-size:12.5px; color:var(--marigold); text-decoration:none; font-weight:500;}
+  .card-link:hover{text-decoration:underline;}
+  .del-btn{
+    background:none; border:none; color:var(--ink-soft); font-size:12px;
+    cursor:pointer; opacity:0.5; transition:opacity .15s ease;
+  }
+  .del-btn:hover{opacity:1; color:#a33;}
+
+  .empty{
+    grid-column:1/-1;
+    text-align:center;
+    padding:60px 20px;
+    color:var(--ink-soft);
+  }
+  .empty .display{font-size:22px; margin-bottom:8px; color:var(--ink);}
+
+  /* ---------- MODAL ---------- */
+  .overlay{
+    position:fixed; inset:0; background:rgba(33,29,23,0.45);
+    display:none; align-items:center; justify-content:center;
+    z-index:50; padding:20px;
+  }
+  .overlay.show{display:flex;}
+  .modal{
+    background:var(--paper); border-radius:6px; width:100%; max-width:440px;
+    padding:30px; box-shadow:0 20px 60px rgba(0,0,0,0.25);
+    max-height:88vh; overflow-y:auto;
+  }
+  .modal h3{margin:0 0 20px; font-size:22px;}
+  .field{margin-bottom:16px;}
+  .field label{
+    display:block; font-size:12px; letter-spacing:0.04em; text-transform:uppercase;
+    color:var(--ink-soft); margin-bottom:6px; font-weight:600;
+  }
+  .field input[type=text], .field input[type=email], .field textarea, .field select{
+    width:100%; padding:10px 12px; border:1px solid var(--line); border-radius:4px;
+    font-family:'Work Sans'; font-size:14px; background:#fff; color:var(--ink);
+  }
+  .field textarea{resize:vertical; min-height:60px;}
+  .field input[type=file]{font-size:13px;}
+  .modal-actions{display:flex; gap:10px; margin-top:22px;}
+  .btn-primary{
+    flex:1; background:var(--ink); color:var(--paper); border:none; padding:11px;
+    border-radius:4px; font-family:'Work Sans'; font-size:14px; cursor:pointer; font-weight:500;
+  }
+  .btn-primary:disabled{opacity:0.5; cursor:default;}
+  .btn-ghost{
+    background:none; border:1px solid var(--line); color:var(--ink-soft); padding:11px 16px;
+    border-radius:4px; font-family:'Work Sans'; font-size:14px; cursor:pointer;
+  }
+  .hint{font-size:11.5px; color:var(--ink-soft); margin-top:-8px; margin-bottom:16px;}
+  .toast{
+    position:fixed; bottom:24px; left:50%; transform:translateX(-50%) translateY(20px);
+    background:var(--ink); color:var(--paper); padding:12px 22px; border-radius:100px;
+    font-size:13px; opacity:0; transition:all .25s ease; z-index:60; pointer-events:none;
+  }
+  .toast.show{opacity:1; transform:translateX(-50%) translateY(0);}
+
+  footer{
+    border-top:1px solid var(--line);
+    padding:30px 0 50px;
+    text-align:center;
+    color:var(--ink-soft);
+    font-size:12.5px;
+  }
+
+  @media(max-width:520px){
+    .hero{padding:48px 0 32px;}
+    .grid{grid-template-columns:repeat(auto-fill, minmax(150px,1fr)); gap:16px;}
+    .card-body{padding:12px 14px 14px;}
+  }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <div class="hero" id="hero">
+    <div class="hero-top">
+      <div>
+        <p class="eyebrow" id="eyebrow">Invitation &amp; Event Design</p>
+        <h1 id="heroName">Bhavya <em>Creates</em></h1>
+        <p class="tagline" id="heroTagline">Wedding invites, birthday cards, and brand videos — designed to feel personal, not templated. Based in Indore, working with clients everywhere.</p>
+      </div>
+      <button class="edit-btn" id="editProfileBtn" style="display:none;">Edit profile</button>
+    </div>
+    <div class="contact-row" id="contactRow"></div>
+  </div>
+
+  <div class="tabs">
+    <button class="tab active" data-cat="all">All work</button>
+    <button class="tab" data-cat="Wedding">Weddings</button>
+    <button class="tab" data-cat="Birthday">Birthdays</button>
+    <button class="tab" data-cat="Brand/Ad">Brand &amp; Ads</button>
+    <div class="spacer"></div>
+    <button class="add-btn" id="addWorkBtn" style="display:none;">+ Add work</button>
+  </div>
+
+  <div class="grid" id="grid">
+    <div class="empty"><div class="display">Loading your portfolio…</div></div>
+  </div>
+</div>
+
+<footer>Made with care, one invitation at a time.</footer>
+
+<!-- Add/Edit Work Modal -->
+<div class="overlay" id="workOverlay">
+  <div class="modal">
+    <h3>Add a piece</h3>
+    <div class="field">
+      <label>Title</label>
+      <input type="text" id="wTitle" placeholder="e.g. Marigold Save-the-Date">
+    </div>
+    <div class="field">
+      <label>Category</label>
+      <select id="wCategory">
+        <option value="Wedding">Wedding</option>
+        <option value="Birthday">Birthday</option>
+        <option value="Brand/Ad">Brand / Ad</option>
+      </select>
+    </div>
+    <div class="field">
+      <label>Image</label>
+      <input type="file" id="wImage" accept="image/*">
+      <div class="hint">A still frame, thumbnail, or design preview works great.</div>
+    </div>
+    <div class="field">
+      <label>Note (optional)</label>
+      <textarea id="wNote" placeholder="A short line about the project or client brief"></textarea>
+    </div>
+    <div class="field">
+      <label>Link (optional)</label>
+      <input type="text" id="wLink" placeholder="Instagram reel / video link">
+    </div>
+    <div class="field">
+      <label>Passcode</label>
+      <input type="text" id="wPin" placeholder="Enter your portfolio passcode">
+    </div>
+    <div class="modal-actions">
+      <button class="btn-ghost" id="wCancel">Cancel</button>
+      <button class="btn-primary" id="wSave">Save piece</button>
+    </div>
+  </div>
+</div>
+
+<!-- Edit Profile Modal -->
+<div class="overlay" id="profileOverlay">
+  <div class="modal">
+    <h3>Edit profile</h3>
+    <div class="field"><label>Name / Title line</label><input type="text" id="pName"></div>
+    <div class="field"><label>Eyebrow label</label><input type="text" id="pEyebrow"></div>
+    <div class="field"><label>Tagline</label><textarea id="pTagline"></textarea></div>
+    <div class="field"><label>Email</label><input type="text" id="pEmail" placeholder="you@email.com"></div>
+    <div class="field"><label>Instagram (URL)</label><input type="text" id="pInsta" placeholder="https://instagram.com/yourhandle"></div>
+    <div class="field"><label>WhatsApp link</label><input type="text" id="pWhats" placeholder="https://wa.me/91XXXXXXXXXX"></div>
+    <div class="field">
+      <label>Passcode</label>
+      <input type="text" id="pPin" placeholder="Enter your portfolio passcode">
+    </div>
+    <div class="modal-actions">
+      <button class="btn-ghost" id="pCancel">Cancel</button>
+      <button class="btn-primary" id="pSave">Save</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const PIN = "shaadi2026"; // change this in the code to whatever passcode you like
+const OWNER_KEY = "bhavya-studio"; // change this too — your private key, goes in ?key=... in YOUR OWN link only
+const ownerMode = new URLSearchParams(window.location.search).get('key') === OWNER_KEY;
+let works = [];
+let profile = {
+  name:"Bhavya <em>Creates</em>",
+  eyebrow:"Invitation & Event Design",
+  tagline:"Wedding invites, birthday cards, and brand videos — designed to feel personal, not templated. Based in Indore, working with clients everywhere.",
+  email:"", instagram:"", whatsapp:""
+};
+let activeCat = "all";
+
+function toast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), 2200);
+}
+
+async function loadAll(){
+  try{
+    const p = await window.storage.get('profile', true);
+    if(p && p.value) profile = JSON.parse(p.value);
+  }catch(e){ /* no profile yet */ }
+  try{
+    const w = await window.storage.get('works', true);
+    if(w && w.value) works = JSON.parse(w.value);
+  }catch(e){ works = []; }
+  if(ownerMode){
+    document.getElementById('editProfileBtn').style.display = 'inline-block';
+    document.getElementById('addWorkBtn').style.display = 'inline-block';
+  }
+  renderProfile();
+  renderGrid();
+}
+
+function renderProfile(){
+  document.getElementById('heroName').innerHTML = profile.name;
+  document.getElementById('eyebrow').textContent = profile.eyebrow;
+  document.getElementById('heroTagline').textContent = profile.tagline;
+  const row = document.getElementById('contactRow');
+  row.innerHTML = "";
+  if(profile.email) row.innerHTML += `<a href="mailto:${profile.email}">${profile.email}</a>`;
+  if(profile.instagram) row.innerHTML += `<a href="${profile.instagram}" target="_blank">Instagram</a>`;
+  if(profile.whatsapp) row.innerHTML += `<a href="${profile.whatsapp}" target="_blank">WhatsApp</a>`;
+  if(!profile.email && !profile.instagram && !profile.whatsapp && ownerMode){
+    row.innerHTML = `<span style="font-size:13px;color:var(--ink-soft);">Add your contact links via "Edit profile" →</span>`;
+  }
+}
+
+function renderGrid(){
+  const grid = document.getElementById('grid');
+  const filtered = activeCat === "all" ? works : works.filter(w => w.category === activeCat);
+  if(filtered.length === 0){
+    grid.innerHTML = `<div class="empty"><div class="display">Nothing here yet</div>Add your first piece to start filling this in.</div>`;
+    return;
+  }
+  grid.innerHTML = filtered.slice().reverse().map(w => `
+    <div class="card">
+      <div class="card-media">
+        ${w.image ? `<img src="${w.image}" alt="${escapeHtml(w.title)}">` : `<div class="ph">No image added</div>`}
+      </div>
+      <div class="card-body">
+        <p class="card-cat">${w.category}</p>
+        <h3 class="card-title">${escapeHtml(w.title)}</h3>
+        ${w.note ? `<p class="card-note">${escapeHtml(w.note)}</p>` : ""}
+        <div class="card-actions">
+          ${w.link ? `<a class="card-link" href="${w.link}" target="_blank">View →</a>` : `<span></span>`}
+          ${ownerMode ? `<button class="del-btn" data-id="${w.id}">Remove</button>` : ""}
+        </div>
+      </div>
+    </div>
+  `).join("");
+
+  if(ownerMode){
+    grid.querySelectorAll('.del-btn').forEach(btn=>{
+      btn.addEventListener('click', ()=> removeWork(btn.dataset.id));
+    });
+  }
+}
+
+function escapeHtml(s){
+  const d = document.createElement('div');
+  d.textContent = s || "";
+  return d.innerHTML;
+}
+
+async function removeWork(id){
+  const pin = prompt("Enter passcode to remove this piece:");
+  if(pin !== PIN){ if(pin!==null) toast("Wrong passcode"); return; }
+  works = works.filter(w => w.id !== id);
+  await window.storage.set('works', JSON.stringify(works), true);
+  renderGrid();
+  toast("Removed");
+}
+
+// ---- Tabs ----
+document.querySelectorAll('.tab').forEach(tab=>{
+  tab.addEventListener('click', ()=>{
+    document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+    tab.classList.add('active');
+    activeCat = tab.dataset.cat;
+    renderGrid();
+  });
+});
+
+// ---- Add work modal ----
+const workOverlay = document.getElementById('workOverlay');
+document.getElementById('addWorkBtn').addEventListener('click', ()=>{
+  document.getElementById('wTitle').value = "";
+  document.getElementById('wNote').value = "";
+  document.getElementById('wLink').value = "";
+  document.getElementById('wImage').value = "";
+  document.getElementById('wPin').value = "";
+  workOverlay.classList.add('show');
+});
+document.getElementById('wCancel').addEventListener('click', ()=> workOverlay.classList.remove('show'));
+
+function resizeImage(file, maxW){
+  return new Promise((resolve, reject)=>{
+    const reader = new FileReader();
+    reader.onload = (e)=>{
+      const img = new Image();
+      img.onload = ()=>{
+        const scale = Math.min(1, maxW / img.width);
+        const w = Math.round(img.width * scale);
+        const h = Math.round(img.height * scale);
+        const canvas = document.createElement('canvas');
+        canvas.width = w; canvas.height = h;
+        canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+        resolve(canvas.toDataURL('image/jpeg', 0.8));
+      };
+      img.onerror = reject;
+      img.src = e.target.result;
+    };
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
+document.getElementById('wSave').addEventListener('click', async ()=>{
+  const pin = document.getElementById('wPin').value;
+  if(pin !== PIN){ toast("Wrong passcode"); return; }
+  const title = document.getElementById('wTitle').value.trim();
+  if(!title){ toast("Add a title first"); return; }
+  const category = document.getElementById('wCategory').value;
+  const note = document.getElementById('wNote').value.trim();
+  const link = document.getElementById('wLink').value.trim();
+  const fileInput = document.getElementById('wImage');
+  const btn = document.getElementById('wSave');
+  btn.disabled = true; btn.textContent = "Saving…";
+
+  let image = "";
+  try{
+    if(fileInput.files && fileInput.files[0]){
+      image = await resizeImage(fileInput.files[0], 900);
+    }
+    const item = { id: Date.now().toString(36), title, category, note, link, image };
+    works.push(item);
+    await window.storage.set('works', JSON.stringify(works), true);
+    workOverlay.classList.remove('show');
+    renderGrid();
+    toast("Added to your portfolio");
+  }catch(e){
+    toast("Something went wrong — try a smaller image");
+  }
+  btn.disabled = false; btn.textContent = "Save piece";
+});
+
+// ---- Edit profile modal ----
+const profileOverlay = document.getElementById('profileOverlay');
+document.getElementById('editProfileBtn').addEventListener('click', ()=>{
+  document.getElementById('pName').value = profile.name.replace(/<\/?em>/g,'');
+  document.getElementById('pEyebrow').value = profile.eyebrow;
+  document.getElementById('pTagline').value = profile.tagline;
+  document.getElementById('pEmail').value = profile.email;
+  document.getElementById('pInsta').value = profile.instagram;
+  document.getElementById('pWhats').value = profile.whatsapp;
+  document.getElementById('pPin').value = "";
+  profileOverlay.classList.add('show');
+});
+document.getElementById('pCancel').addEventListener('click', ()=> profileOverlay.classList.remove('show'));
+
+document.getElementById('pSave').addEventListener('click', async ()=>{
+  const pin = document.getElementById('pPin').value;
+  if(pin !== PIN){ toast("Wrong passcode"); return; }
+  profile = {
+    name: document.getElementById('pName').value.trim() || "Bhavya",
+    eyebrow: document.getElementById('pEyebrow').value.trim(),
+    tagline: document.getElementById('pTagline').value.trim(),
+    email: document.getElementById('pEmail').value.trim(),
+    instagram: document.getElementById('pInsta').value.trim(),
+    whatsapp: document.getElementById('pWhats').value.trim(),
+  };
+  await window.storage.set('profile', JSON.stringify(profile), true);
+  profileOverlay.classList.remove('show');
+  renderProfile();
+  toast("Profile updated");
+});
+
+loadAll();
+</script>
+</body>
+</html>
