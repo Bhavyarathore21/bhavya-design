@@ -317,9 +317,14 @@
       </select>
     </div>
     <div class="field">
-      <label>Image</label>
+      <label>Image link (recommended)</label>
+      <input type="text" id="wImageUrl" placeholder="Paste a shareable image link">
+      <div class="hint">Upload your photo to Google Drive, Google Photos, or Imgur → make it "Anyone with the link can view" → paste that link here. This is the most reliable method.</div>
+    </div>
+    <div class="field">
+      <label>Or upload a file directly</label>
       <input type="file" id="wImage" accept="image/*">
-      <div class="hint">A still frame, thumbnail, or design preview works great.</div>
+      <div class="hint">Only use this if you don't have a link — direct uploads can be less reliable for larger images.</div>
     </div>
     <div class="field">
       <label>Note (optional)</label>
@@ -489,6 +494,7 @@ document.getElementById('addWorkBtn').addEventListener('click', ()=>{
   document.getElementById('wNote').value = "";
   document.getElementById('wLink').value = "";
   document.getElementById('wImage').value = "";
+  document.getElementById('wImageUrl').value = "";
   document.getElementById('wPin').value = "";
   workOverlay.classList.add('show');
 });
@@ -561,14 +567,19 @@ document.getElementById('wSave').addEventListener('click', async ()=>{
   btn.disabled = true; btn.textContent = "Saving…";
 
   let image = "";
-  try{
-    if(fileInput.files && fileInput.files[0]){
-      image = await resizeImage(fileInput.files[0], 900);
+  const imageUrl = document.getElementById('wImageUrl').value.trim();
+  if(imageUrl){
+    image = imageUrl;
+  } else {
+    try{
+      if(fileInput.files && fileInput.files[0]){
+        image = await resizeImage(fileInput.files[0], 900);
+      }
+    }catch(e){
+      toast(friendlyUploadError(e));
+      btn.disabled = false; btn.textContent = "Save piece";
+      return;
     }
-  }catch(e){
-    toast(friendlyUploadError(e));
-    btn.disabled = false; btn.textContent = "Save piece";
-    return;
   }
   try{
     const item = { id: Date.now().toString(36), title, category, note, link, image };
