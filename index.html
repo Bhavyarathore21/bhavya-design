@@ -389,8 +389,16 @@ async function loadAll(){
     if(p && p.value) profile = JSON.parse(p.value);
   }catch(e){ /* no profile yet */ }
   try{
-    const w = await window.storage.get('works', true);
-    if(w && w.value) works = JSON.parse(w.value);
+    const list = await window.storage.list('work:', true);
+    const keys = (list && list.keys) || [];
+    const loaded = [];
+    for(const k of keys){
+      try{
+        const r = await window.storage.get(k, true);
+        if(r && r.value) loaded.push(JSON.parse(r.value));
+      }catch(e){ /* skip a broken item rather than failing the whole load */ }
+    }
+    works = loaded;
   }catch(e){ works = []; }
   if(ownerMode){
     document.getElementById('editProfileBtn').style.display = 'inline-block';
@@ -454,10 +462,14 @@ function escapeHtml(s){
 async function removeWork(id){
   const pin = prompt("Enter passcode to remove this piece:");
   if(pin !== PIN){ if(pin!==null) toast("Wrong passcode"); return; }
-  works = works.filter(w => w.id !== id);
-  await window.storage.set('works', JSON.stringify(works), true);
-  renderGrid();
-  toast("Removed");
+  try{
+    await window.storage.delete('work:' + id, true);
+    works = works.filter(w => w.id !== id);
+    renderGrid();
+    toast("Removed");
+  }catch(e){
+    toast("Couldn't remove that piece — try again");
+  }
 }
 
 // ---- Tabs ----
@@ -482,42 +494,48 @@ document.getElementById('addWorkBtn').addEventListener('click', ()=>{
 });
 document.getElementById('wCancel').addEventListener('click', ()=> workOverlay.classList.remove('show'));
 
-function resizeImage(file, maxW){
-  return new Promise((resolve, reject)=>{
-    if(!file.type || !file.type.startsWith('image/')){
-      reject(new Error('not-image'));
-      return;
-    }
-    if(/heic|heif/i.test(file.type) || /\.heic$|\.heif$/i.test(file.name || '')){
-      reject(new Error('heic'));
-      return;
-    }
-    if(file.size > 25 * 1024 * 1024){
-      reject(new Error('too-big'));
-      return;
-    }
+async function resizeImage(file, maxW){
+  if(!file.type || !file.type.startsWith('image/')){
+    throw new Error('not-image');
+  }
+  if(/heic|heif/i.test(file.type) || /\.heic$|\.heif$/i.test(file.name || '')){
+    throw new Error('heic');
+  }
+  if(file.size > 25 * 1024 * 1024){
+    throw new Error('too-big');
+  }
+  const dataUrl = await new Promise((resolve, reject)=>{
     const reader = new FileReader();
-    reader.onload = (e)=>{
-      const img = new Image();
-      img.onload = ()=>{
-        try{
-          const scale = Math.min(1, maxW / img.width);
-          const w = Math.round(img.width * scale) || 1;
-          const h = Math.round(img.height * scale) || 1;
-          const canvas = document.createElement('canvas');
-          canvas.width = w; canvas.height = h;
-          canvas.getContext('2d').drawImage(img, 0, 0, w, h);
-          resolve(canvas.toDataURL('image/jpeg', 0.75));
-        }catch(err){
-          reject(new Error('canvas-failed'));
-        }
-      };
-      img.onerror = ()=> reject(new Error('decode-failed'));
-      img.src = e.target.result;
-    };
+    reader.onload = (e)=> resolve(e.target.result);
     reader.onerror = ()=> reject(new Error('read-failed'));
     reader.readAsDataURL(file);
   });
+  const img = await new Promise((resolve, reject)=>{
+    const i = new Image();
+    i.onload = ()=> resolve(i);
+    i.onerror = ()=> reject(new Error('decode-failed'));
+    i.src = dataUrl;
+  });
+
+  // Try progressively smaller/lower-quality renders until comfortably under the storage cap
+  const attempts = [
+    {w: maxW, q: 0.75},
+    {w: 700, q: 0.65},
+    {w: 500, q: 0.6},
+    {w: 360, q: 0.55},
+  ];
+  let last = "";
+  for(const a of attempts){
+    const scale = Math.min(1, a.w / img.width);
+    const w = Math.round(img.width * scale) || 1;
+    const h = Math.round(img.height * scale) || 1;
+    const canvas = document.createElement('canvas');
+    canvas.width = w; canvas.height = h;
+    canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+    last = canvas.toDataURL('image/jpeg', a.q);
+    if(last.length < 1200000) return last; // ~900KB, well under any per-item cap
+  }
+  return last;
 }
 
 function friendlyUploadError(err){
@@ -526,7 +544,7 @@ function friendlyUploadError(err){
   if(msg === 'heic') return "iPhone HEIC photos aren't supported — export as JPG first (share it to yourself via WhatsApp, that auto-converts it).";
   if(msg === 'too-big') return "That image is too large — try a smaller file (under 25MB).";
   if(msg === 'decode-failed') return "Couldn't read that image — try saving it as a JPG and re-uploading.";
-  if(msg === 'storage-failed') return "Saved locally but couldn't sync — check your connection and try again.";
+  if(msg === 'storage-failed') return "Couldn't save that piece — try a different image, or remove an older piece to free up space.";
   return "Something went wrong — try a different image file.";
 }
 
@@ -554,13 +572,12 @@ document.getElementById('wSave').addEventListener('click', async ()=>{
   }
   try{
     const item = { id: Date.now().toString(36), title, category, note, link, image };
+    await window.storage.set('work:' + item.id, JSON.stringify(item), true);
     works.push(item);
-    await window.storage.set('works', JSON.stringify(works), true);
     workOverlay.classList.remove('show');
     renderGrid();
     toast("Added to your portfolio");
   }catch(e){
-    works.pop();
     toast(friendlyUploadError(new Error('storage-failed')));
   }
   btn.disabled = false; btn.textContent = "Save piece";
